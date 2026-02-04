@@ -43,7 +43,7 @@ def main():
 
     while True:
         show_data(records)
-        print("1. 支出を追加  2. 終了")
+        print("1. 支出を追加  2. 支出を削除する 3. 終了")
         choice = input("操作を選んでください: ")
 
         if choice == "1":
@@ -58,8 +58,19 @@ def main():
                 print("記録しました！")
             else:
                 print("エラー：金額は半角数字で入力してください。")
-
-        elif choice == "2":
+        if choice == "2":
+            if not records:
+                print("削除する支出がありません。")
+                continue
+            try:
+                show_data(records)
+                delete_num = int(input("削除したい支出の番号を入力して下さい"))
+                removed = records.pop(delete_num - 1)
+                save_data(records)  # 変更のたびに保存
+                print(f"「{removed}」を削除しました。")
+            except (ValueError, IndexError):
+                print("正しい番号を入力してください。")
+        elif choice == "3":
             break
 
 
