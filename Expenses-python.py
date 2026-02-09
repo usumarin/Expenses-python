@@ -2,6 +2,7 @@ import os
 import datetime
 
 FILE_NAME = "kakeibo.csv"
+BUDGET_NAME = "budget.txt"
 
 
 def load_data():
@@ -27,7 +28,9 @@ def save_data(data):
 
 
 def show_data(data):
+    budget = load_budget()
     """一覧表示と合計金額の計算"""
+    print(f"\n今月の予算額 {budget}円")
     print("\n--- 収支一覧 ---")
     total = 0
     for i, entry in enumerate(data, 1):
@@ -36,6 +39,25 @@ def show_data(data):
         total += int(amount)  # 金額を数値に変換して足す
     print("----------------")
     print(f"合計支出: {total}円")
+    print(f"残り予算額: {budget - total}円")
+    if budget - total < 0:
+        print(f"予算額を超過しています")
+
+
+def save_budget(budget_amount):
+    """今月の予算を保存します"""
+    with open(BUDGET_NAME, "w", encoding="utf-8") as f:
+        f.write(str(budget_amount))
+
+
+def load_budget():
+    if not os.path.exists(BUDGET_NAME):
+        budget_amount = input("今月の予算額を入力してください")
+        save_budget(budget_amount)
+        print("今月の予算額を保存しました")
+    with open(BUDGET_NAME, "r", encoding="utf-8") as f:
+        content = f.read().strip()
+        return int(content) if content.isdigit() else 0
 
 
 def main():
@@ -43,7 +65,7 @@ def main():
 
     while True:
         show_data(records)
-        print("1. 支出を追加  2. 支出を削除する 3. 終了")
+        print("1. 支出を追加  2. 支出を削除する 3. 予算額を更新する 4. 終了")
         choice = input("操作を選んでください: ")
 
         if choice == "1":
@@ -71,6 +93,13 @@ def main():
             except (ValueError, IndexError):
                 print("正しい番号を入力してください。")
         elif choice == "3":
+            try:
+                budget_amount = input("更新したい予算額を入力して下さい")
+                save_budget(budget_amount)
+            except (ValueError, IndexError):
+                print("正しい内容を入力してください。")
+
+        elif choice == "4":
             break
 
 
